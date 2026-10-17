@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}All Addresses · Cursed Storefronts{% endblock %}
+
+{% block content %}
+<h1 class="mb-3">San Diego Storefronts</h1>
+<p class="text-muted">Every tracked address, most turnover first.</p>
+
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>Address</th>
+      <th>ZIP</th>
+      <th>Businesses on record</th>
+      <th>Current tenant</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for a in addresses %}
+    <tr>
+      <td>{{ a.street }}{% if a.unit %}, Unit {{ a.unit }}{% endif %}</td>
+      <td>{{ a.zip }}</td>
+      <td>{{ a.occupancy_count }}</td>
+      <td>{{ a.current_business or "Vacant" }}</td>
+    </tr>
+    {% else %}
+    <tr>
+      <td colspan="4" class="text-muted">No addresses yet. Did you run seed.sql?</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
