@@ -44,7 +44,25 @@ sample data. When teammates add new migrations, just run
 `python -m db.migrate` again. It only applies the new ones.
 Only use `--seed` on a fresh database, or the sample data will be duplicated.
 
-### 6. Run the app
+### 6. Load City business data
+
+Download the City of San Diego Business Tax Certificate CSV files into:
+
+```text
+data/raw/
+
+Then run: 
+
+python -m db.migrate
+python data/scripts/load_city_data.py
+
+The loader stages the raw CSVs, inserts City addresses, businesses, categories, and occupancies, and records rows that cannot be loaded in load_rejects. 
+
+For occupancies, the loader uses the certificate effective date as opened_on. Cancelled certificates use the certificate expiration date as closed_on, while active and pending certificates remain open ended. 
+
+Files in data/raw/ are ignored by Git and should not be committed. 
+
+### 7. Run the app
 ```
 python run.py
 ```
@@ -56,7 +74,7 @@ python run.py
 app/            Flask app: routes, database helper, templates, static files
 db/migrations/  SQL files that build the schema, run in number order
 db/seed.sql     Fake starter data
-data/scripts/   Scripts that clean and load real city data
+data/scripts/   Scripts that load and process real city data
 data/raw/       Downloaded datasets (not committed)
 docs/           ER diagram, screenshots, project documents
 ```
