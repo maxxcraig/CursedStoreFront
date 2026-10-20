@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}{{ address.street }} · Cursed Storefronts{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('main.index') }}" class="text-decoration-none">&larr; All addresses</a>
+
+<h1 class="mt-2 mb-1">
+  {{ address.street }}{% if address.unit %}, Unit {{ address.unit }}{% endif %}
+</h1>
+<p class="text-muted">{{ address.city }}{% if address.zip %}, {{ address.zip }}{% endif %}</p>
+
+{% if occupancies %}
+<p>{{ occupancies|length }} business{{ "es" if occupancies|length != 1 }} on record, oldest first.</p>
+
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>Business</th>
+      <th>Category</th>
+      <th>Opened</th>
+      <th>Closed</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for o in occupancies %}
+    <tr>
+      <td>{{ o.name }}</td>
+      <td>{{ o.category or "—" }}</td>
+      <td>{{ o.opened_on.strftime("%b %d, %Y") }}</td>
+      <td>
+        {% if o.closed_on %}{{ o.closed_on.strftime("%b %d, %Y") }}
+        {% else %}<span class="badge text-bg-success">Present</span>{% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="alert alert-secondary">No businesses on record for this address yet.</div>
+{% endif %}
+{% endblock %}
