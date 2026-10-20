@@ -52,8 +52,9 @@ condition on `addresses.street` with a condition on `businesses.name` across
 a LEFT JOIN. Postgres has to look at every address to evaluate that OR, so
 it ignores both indexes. Splitting it into two queries joined with UNION
 (street matches, then business name matches) lets each half use its index,
-and goes from 67 ms to 8 ms. That is a change to `app/routes.py`, not the
-database, so it is noted here for whoever owns the search page.
+and goes from 67 ms to 8 ms. The search route in `app/routes.py` now does
+this, and the leaderboard route reads from `curse_scores` instead of
+repeating the math inline.
 
 **The home page and the curse view are whole-table aggregates.** They count
 and average every occupancy for every address, then sort. No index can skip
