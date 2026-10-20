@@ -37,10 +37,12 @@ docker compose up -d
 ### 5. Create tables and load sample data
 Wait a few seconds after step 4, then:
 ```
-docker exec -i cursed_db psql -U cursed -d cursed_storefronts < db/migrations/001_init.sql
-docker exec -i cursed_db psql -U cursed -d cursed_storefronts < db/seed.sql
+python -m db.migrate --seed
 ```
-Run migrations in number order. When new migration files are added, run each new one.
+This applies every migration in `db/migrations/` in order, then loads the
+sample data. When teammates add new migrations, just run
+`python -m db.migrate` again. It only applies the new ones.
+Only use `--seed` on a fresh database, or the sample data will be duplicated.
 
 ### 6. Run the app
 ```
