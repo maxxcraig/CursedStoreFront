@@ -18,7 +18,7 @@
   <tbody>
     {% for a in addresses %}
     <tr>
-      <td>{{ a.street }}{% if a.unit %}, Unit {{ a.unit }}{% endif %}</td>
+      <td><a href="{{ url_for('main.address_detail', address_id=a.id) }}">{{ a.street }}{% if a.unit %}, Unit {{ a.unit }}{% endif %}</a></td>
       <td>{{ a.zip }}</td>
       <td>{{ a.occupancy_count }}</td>
       <td>{{ a.current_business or "Vacant" }}</td>
