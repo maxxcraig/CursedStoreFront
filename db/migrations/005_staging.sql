@@ -1,4 +1,4 @@
--- 002_staging.sql
+-- 005_staging.sql
 -- Issue #2: tables used by data/scripts/load_city_data.py
 --
 -- staging_business_certs holds the raw city CSV exactly as downloaded.
