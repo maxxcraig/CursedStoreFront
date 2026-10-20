@@ -28,14 +28,19 @@ def search():
     q = request.args.get("q", "").strip()
     results = []
     if q:
+        # Two halves joined with UNION instead of one OR across the join,
+        # so each half can use its trigram index (see docs/performance.md)
         results = query("""
-            SELECT DISTINCT a.id, a.street, a.unit, a.zip
+            SELECT a.id, a.street, a.unit, a.zip
             FROM addresses a
-            LEFT JOIN occupancies o ON o.address_id = a.id
-            LEFT JOIN businesses  b ON b.id = o.business_id
             WHERE a.street ILIKE %(pattern)s
-               OR b.name   ILIKE %(pattern)s
-            ORDER BY a.street, a.unit
+            UNION
+            SELECT a.id, a.street, a.unit, a.zip
+            FROM addresses a
+            JOIN occupancies o ON o.address_id = a.id
+            JOIN businesses  b ON b.id = o.business_id
+            WHERE b.name ILIKE %(pattern)s
+            ORDER BY street, unit
             LIMIT 50
         """, {"pattern": f"%{q}%"})
     return render_template("search.html", q=q, results=results)
@@ -43,28 +48,14 @@ def search():
 
 @bp.route("/leaderboard")
 def leaderboard():
-    """Most cursed storefronts: highest recent turnover first.
-
-    TODO: once Steven's curse score view is merged, replace this query
-    with a SELECT from that view, ordered by curse_score.
-    """
+    """Most cursed storefronts: highest curse score first (see 004_curse_view.sql)."""
     rows = query("""
-        SELECT a.id, a.street, a.unit, a.zip,
-               COUNT(o.id) AS occupancy_count,
-               COUNT(o.id) FILTER (
-                   WHERE o.closed_on >= CURRENT_DATE - INTERVAL '10 years'
-               ) AS recent_closures,
-               ROUND(
-                   AVG(o.closed_on - o.opened_on)
-                       FILTER (WHERE o.closed_on IS NOT NULL) / 30.0,
-                   1
-               ) AS avg_lifespan_months
-        FROM addresses a
-        JOIN occupancies o ON o.address_id = a.id
-        GROUP BY a.id
-        HAVING COUNT(o.id) >= 2
-        ORDER BY recent_closures DESC, occupancy_count DESC,
-                 avg_lifespan_months ASC NULLS LAST
+        SELECT id, street, unit, zip, occupancy_count, curse_score,
+               closures_last_10y AS recent_closures,
+               ROUND(avg_lifespan_days / 30.0, 1) AS avg_lifespan_months
+        FROM curse_scores
+        WHERE occupancy_count >= 2
+        ORDER BY curse_score DESC, occupancy_count DESC, avg_lifespan_months ASC NULLS LAST
         LIMIT 25
     """)
     return render_template("leaderboard.html", rows=rows)
