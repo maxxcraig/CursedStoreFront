@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, abort, render_template
 from .db import query
 
 bp = Blueprint("main", __name__)
@@ -18,3 +18,23 @@ def index():
         ORDER BY occupancy_count DESC, a.street
     """)
     return render_template("index.html", addresses=addresses)
+
+@bp.route("/address/<int:address_id>")
+def address_detail(address_id):
+    """Address page: one storefront and every business that has occupied it."""
+    rows = query("SELECT id, street, unit, city, zip FROM addresses WHERE id = %s",
+                 (address_id,))
+    if not rows:
+        abort(404)
+    address = rows[0]
+
+    # Oldest first, so the page reads like a timeline
+    occupancies = query("""
+        SELECT b.name, b.category, o.opened_on, o.closed_on
+        FROM occupancies o
+        JOIN businesses b ON b.id = o.business_id
+        WHERE o.address_id = %s
+        ORDER BY o.opened_on
+    """, (address_id,))
+
+    return render_template("address.html", address=address, occupancies=occupancies)
