@@ -62,8 +62,8 @@ For occupancies, the loader uses the certificate effective date as opened_on. Ca
 
 Files in data/raw/ are ignored by Git and should not be committed. 
 
-### 7. Run the app
 ```
+### 7. Run the app
 python run.py
 ```
 - App: http://localhost:5001
@@ -78,7 +78,7 @@ data/scripts/   Scripts that load and process real city data
 data/raw/       Downloaded datasets (not committed)
 docs/           ER diagram, screenshots, project documents
 ```
-
+```
 ## Team workflow
 1. Pick up an issue assigned to you on GitHub.
 2. Create a branch for it: `git checkout -b issue-12-short-name`
