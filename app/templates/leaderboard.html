@@ -7,6 +7,7 @@
 <p class="text-muted mb-4">Addresses where businesses keep closing, ranked by closures in the last 10 years.</p>
 
 {% if rows %}
+<div class="cs-card table-responsive">
 <table class="table table-hover align-middle">
   <thead>
     <tr>
@@ -39,6 +40,7 @@
     {% endfor %}
   </tbody>
 </table>
+</div>
 {% else %}
 <p class="text-muted">Not enough history yet. Addresses need at least two businesses to be ranked.</p>
 {% endif %}
