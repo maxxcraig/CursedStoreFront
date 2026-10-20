@@ -1,3 +1,5 @@
+from datetime import date
+
 from flask import Blueprint, abort, render_template
 from .db import query
 
@@ -37,4 +39,19 @@ def address_detail(address_id):
         ORDER BY o.opened_on
     """, (address_id,))
 
-    return render_template("address.html", address=address, occupancies=occupancies)
+    # Chart data for the timeline (issue #7). Dates become ISO strings so
+    # Jinja's tojson filter can pass them to JavaScript. Businesses that are
+    # still open get today's date as their end, so their bar runs to today.
+    today = date.today()
+    timeline = [
+        {
+            "name": o["name"],
+            "start": o["opened_on"].isoformat(),
+            "end": (o["closed_on"] or today).isoformat(),
+            "open": o["closed_on"] is None,
+        }
+        for o in occupancies
+    ]
+
+    return render_template("address.html", address=address,
+                           occupancies=occupancies, timeline=timeline)
