@@ -83,3 +83,17 @@ Examples include:
   could not be parsed in the initial review
 
 This should be validated and cleaned prior to usage in historical timelines. 
+
+## Address Cleaning
+
+The loader now standardizes address casing and common street suffixes before
+records are inserted into `addresses`. Suite/unit values remain separate in
+the `unit` field.
+
+Using the same set of valid address records:
+
+- Distinct raw addresses: **380,016**
+- Distinct cleaned addresses: **380,015**
+
+The cleaning rules therefore consolidated **1 duplicate address** in the
+current City dataset.

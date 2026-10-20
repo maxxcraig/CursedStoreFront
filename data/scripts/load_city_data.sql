@@ -12,14 +12,8 @@ ON CONFLICT DO NOTHING;
 
 INSERT INTO addresses (street, unit, city, zip, lat, lng)
 SELECT DISTINCT
-    BTRIM(CONCAT_WS(
-        ' ',
-        NULLIF(BTRIM(address_no), ''),
-        NULLIF(BTRIM(address_pd), ''),
-        NULLIF(BTRIM(address_road), ''),
-        NULLIF(BTRIM(address_sfx), '')
-    )),
-    NULLIF(BTRIM(address_suite), ''),
+    clean_street,
+    clean_unit,
     COALESCE(NULLIF(BTRIM(address_city), ''), 'San Diego'),
     NULLIF(BTRIM(address_zip), ''),
     CASE WHEN pg_input_is_valid(lat, 'numeric') THEN lat::numeric END,
@@ -74,16 +68,10 @@ FROM city_business_staging s
 JOIN businesses b
   ON b.account_key = BTRIM(s.account_key)
 JOIN addresses a
-  ON a.street = BTRIM(CONCAT_WS(
-        ' ',
-        NULLIF(BTRIM(s.address_no), ''),
-        NULLIF(BTRIM(s.address_pd), ''),
-        NULLIF(BTRIM(s.address_road), ''),
-        NULLIF(BTRIM(s.address_sfx), '')
-     ))
- AND a.unit IS NOT DISTINCT FROM NULLIF(BTRIM(s.address_suite), '')
+  ON a.street = s.clean_street
+ AND a.unit IS NOT DISTINCT FROM s.clean_unit
  AND a.zip IS NOT DISTINCT FROM NULLIF(BTRIM(s.address_zip), '');
-
+ 
 INSERT INTO load_rejects (account_key, reason, raw_row)
 SELECT account_key, 'invalid dates', raw_row
 FROM city_candidates
