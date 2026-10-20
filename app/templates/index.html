@@ -4,9 +4,14 @@
 
 {% block content %}
 <h1 class="mb-3">San Diego Storefronts</h1>
-<p class="text-muted">Every tracked address, most turnover first.</p>
+<p class="text-muted">
+  Every tracked address, most turnover first.
+  <span class="badge badge-cursed">Cursed</span> = 4+ businesses on record,
+  <span class="badge text-bg-warning">At risk</span> = 3.
+</p>
 
-<table class="table table-hover">
+<div class="cs-card table-responsive">
+<table class="table table-hover align-middle">
   <thead>
     <tr>
       <th>Address</th>
@@ -20,14 +25,22 @@
     <tr>
       <td><a href="{{ url_for('main.address_detail', address_id=a.id) }}">{{ a.street }}{% if a.unit %}, Unit {{ a.unit }}{% endif %}</a></td>
       <td>{{ a.zip }}</td>
-      <td>{{ a.occupancy_count }}</td>
+      <td>
+        {{ a.occupancy_count }}
+        {% if a.occupancy_count >= 4 %}
+          <span class="badge badge-cursed ms-1">Cursed</span>
+        {% elif a.occupancy_count == 3 %}
+          <span class="badge text-bg-warning ms-1">At risk</span>
+        {% endif %}
+      </td>
       <td>{{ a.current_business or "Vacant" }}</td>
     </tr>
     {% else %}
     <tr>
-      <td colspan="4" class="text-muted">No addresses yet. Did you run seed.sql?</td>
+      <td colspan="4" class="text-muted">No addresses yet. Did you run the seed data?</td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
+</div>
 {% endblock %}
