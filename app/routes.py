@@ -1,5 +1,4 @@
-from flask import Blueprint, render_template, request
-from flask import Blueprint, abort, render_template
+from flask import Blueprint, abort, render_template, request
 from .db import query
 
 bp = Blueprint("main", __name__)
@@ -79,9 +78,10 @@ def address_detail(address_id):
 
     # Oldest first, so the page reads like a timeline
     occupancies = query("""
-        SELECT b.name, b.category, o.opened_on, o.closed_on
+        SELECT b.name, c.name AS category, o.opened_on, o.closed_on
         FROM occupancies o
         JOIN businesses b ON b.id = o.business_id
+        LEFT JOIN categories c ON c.id = b.category_id
         WHERE o.address_id = %s
         ORDER BY o.opened_on
     """, (address_id,))
