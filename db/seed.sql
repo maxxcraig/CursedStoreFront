@@ -11,7 +11,19 @@ INSERT INTO addresses (street, unit, zip) VALUES
     ('512 Kelp Way',      NULL, '92101'),
     ('77 Harbor View Dr', NULL, '92106');
 
-INSERT INTO businesses (name, category) VALUES
+INSERT INTO categories (name) VALUES
+    ('Restaurant'),
+    ('Bar'),
+    ('Fitness'),
+    ('Retail'),
+    ('Healthcare'),
+    ('Salon'),
+    ('Entertainment');
+
+--look up each category by name, same idea as the occupancies insert below
+INSERT INTO businesses (name, category_id)
+SELECT v.name, c.id
+FROM (VALUES
     ('Sunset Poke',          'Restaurant'),
     ('Tidewater Tacos',      'Restaurant'),
     ('Brew & Barrel',        'Bar'),
@@ -22,7 +34,9 @@ INSERT INTO businesses (name, category) VALUES
     ('Marina Dental',        'Healthcare'),
     ('Coastline Cuts',       'Salon'),
     ('Night Owl Arcade',     'Entertainment'),
-    ('Breakwater Books',     'Retail');
+    ('Breakwater Books',     'Retail')
+) AS v(name, category)
+JOIN categories c ON c.name = v.category;
 
 --link businesses to addresses by name, so we don't depend on ID numbers
 INSERT INTO occupancies (address_id, business_id, opened_on, closed_on)
