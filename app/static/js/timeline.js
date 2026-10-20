@@ -15,7 +15,15 @@
 
   const starts = data.map((d) => toMs(d.start));
   const ends = data.map((d) => toMs(d.end));
-  const pad = 1000 * 60 * 60 * 24 * 90; // ~3 months of space on each side
+
+  // Axis runs from Jan 1 of the first year to Jan 1 after the last end,
+  // with one tick per year (so labels line up with real year boundaries)
+  const firstYear = new Date(Math.min(...starts)).getFullYear();
+  const lastYear = new Date(Math.max(...ends)).getFullYear() + 1;
+  const yearTicks = [];
+  for (let y = firstYear; y <= lastYear; y++) {
+    yearTicks.push(new Date(y, 0, 1).getTime());
+  }
 
   new Chart(canvas, {
     type: "bar",
@@ -38,8 +46,11 @@
       scales: {
         x: {
           type: "linear",
-          min: Math.min(...starts) - pad,
-          max: Math.max(...ends) + pad,
+          min: yearTicks[0],
+          max: yearTicks[yearTicks.length - 1],
+          afterBuildTicks: (axis) => {
+            axis.ticks = yearTicks.map((value) => ({ value }));
+          },
           ticks: { callback: (value) => new Date(value).getFullYear() },
         },
       },
