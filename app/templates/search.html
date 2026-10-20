@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Search · Cursed Storefronts{% endblock %}
+
+{% block content %}
+<h1 class="mb-3">Search</h1>
+
+<form method="get" action="{{ url_for('main.search') }}" class="mb-4">
+  <div class="input-group">
+    <input type="text" name="q" value="{{ q }}" class="form-control"
+           placeholder="Street or business name, e.g. Seabreeze or Tacos">
+    <button class="btn btn-dark" type="submit">Search</button>
+  </div>
+</form>
+
+{% if q %}
+  {% if results %}
+    <p class="text-muted">{{ results | length }} result{{ "s" if results | length != 1 }} for "{{ q }}"</p>
+    <div class="list-group">
+      {% for r in results %}
+      <a href="/address/{{ r.id }}" class="list-group-item list-group-item-action">
+        {{ r.street }}{% if r.unit %}, Unit {{ r.unit }}{% endif %}
+        <span class="text-muted">· {{ r.zip }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-muted">No addresses or businesses match "{{ q }}".</p>
+  {% endif %}
+{% endif %}
+{% endblock %}
