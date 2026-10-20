@@ -1,0 +1,72 @@
+/* Cursed Storefronts site styles (issue #8).
+   Bootstrap does most of the work; this file sets our colors and brand. */
+
+:root {
+  --cs-dark: #1f1a24;      /* navbar / footer */
+  --cs-accent: #b3261e;    /* "cursed" red */
+  --cs-accent-dark: #8c1d18;
+  --cs-bg: #f7f5f2;        /* warm off-white page background */
+}
+
+body {
+  background-color: var(--cs-bg);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main { flex: 1; }
+
+/* Navbar */
+.cs-navbar { background-color: var(--cs-dark); }
+
+.cs-brand {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.cs-brand .cs-brand-accent { color: var(--cs-accent); }
+.cs-brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  margin-right: 0.45rem;
+  border-radius: 0.4rem;
+  background-color: var(--cs-accent);
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.cs-navbar .nav-link.active {
+  color: #fff;
+  border-bottom: 2px solid var(--cs-accent);
+}
+
+/* Links and buttons use the accent color */
+a { color: var(--cs-accent-dark); }
+a:hover { color: var(--cs-accent); }
+
+.btn-dark {
+  background-color: var(--cs-dark);
+  border-color: var(--cs-dark);
+}
+
+/* Tables sit on white cards so they stand out from the page background */
+.cs-card {
+  background: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  padding: 0.5rem 1rem;
+}
+.cs-card .table { margin-bottom: 0; }
+
+/* Turnover badges on the home page */
+.badge-cursed { background-color: var(--cs-accent); }
+
+footer {
+  background-color: var(--cs-dark);
+  color: #bbb;
+  font-size: 0.875rem;
+}
